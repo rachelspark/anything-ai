@@ -9,6 +9,14 @@ readme = "README.md"
 python = "^3.10"
 modal-client = "^0.49.2130"
 fastapi = "^0.95.1"
+uvicorn = "^0.22.0"
+axios = "^0.3.0"
+numpy = "^1.24.3"
+segment-anything = "^1.0"
+matplotlib = "^3.7.1"
+torch = "^2.0.1"
+opencv-python = "^4.7.0.72"
+pillow = "^9.5.0"
 
 
 [build-system]
