@@ -39,6 +39,25 @@ def fastapi_app():
         allow_headers=["*"],
     )
 
+    def process_coords(point_coords: str):
+        is_point = False
+        point_coords = [float(coord) for coord in point_coords.split(',')]
+        point_coords = np.asarray(point_coords)
+        print(point_coords)
+
+        if (point_coords[0] == point_coords[2]) and (point_coords[1] == point_coords[3]): # just an input point, not an input box
+            is_point = True
+            point_coords = point_coords[0:2]
+
+        # Convert points to a PyTorch tensor
+        points_tensor = torch.tensor([point_coords])
+        # Reshape the tensor to have 4 dimensions
+        points_tensor_4d = points_tensor.unsqueeze(0).unsqueeze(0)
+        print(points_tensor_4d)
+        
+        return is_point, points_tensor_4d
+
+
     def resize_and_pad(image: np.ndarray, mask: np.ndarray, target_size: int = 512) -> Tuple[np.ndarray, np.ndarray]:
         """
         Resizes an image and its corresponding mask to have the longer side equal to `target_size` and pads them to make them
@@ -73,16 +92,12 @@ def fastapi_app():
     def generate_mask(point_coords: str = Form(...), file: UploadFile = File(...)):
         img_content = file.file.read()
         raw_image = Image.open(BytesIO(img_content)).convert("RGBA")
-        point_coords = [float(coord) for coord in point_coords.split(',')]
-        print(point_coords)
+        is_point, points_tensor = process_coords(point_coords)
 
-        # Convert points to a PyTorch tensor
-        points_tensor = torch.tensor([point_coords])
-        # Reshape the tensor to have 4 dimensions
-        points_tensor_4d = points_tensor.unsqueeze(0).unsqueeze(0)
-        print(points_tensor_4d)
-
-        masks, scores = sam.predict_masks.call(img=raw_image.convert('RGB'), input_points=points_tensor_4d)
+        if is_point:
+            masks, scores = sam.predict_masks.call(img=raw_image.convert('RGB'), input_points=points_tensor)
+        else:
+            masks, scores = sam.predict_masks.call(img=raw_image.convert('RGB'), input_box=points_tensor)
 
         def apply_mask_to_image(mask, image, random_color=False):
             if random_color:

@@ -49,14 +49,21 @@ class SegmentAnything:
         self.processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
 
     @modal.method()
+    def get_image_embeddings():
+        pass
+
+    @modal.method()
     def predict_masks(
-        self, img: Image, input_points: List[List[float]]
+        self, img: Image, input_points: List[List[float]] = None, input_box: List[List[float]] = None
     ) -> list[bytes]:
         # calculate image embeddings
         inputs = self.processor(img, return_tensors="pt")
         image_embeddings = self.model.get_image_embeddings(inputs["pixel_values"])
+        print(image_embeddings.dtype)
 
-        inputs = self.processor(img, input_points=input_points, return_tensors="pt")
+        print(input_points)
+        print(input_box)
+        inputs = self.processor(img, input_points=input_points, input_boxes=input_box, return_tensors="pt")
         inputs.pop("pixel_values", None)
         inputs.update({"image_embeddings": image_embeddings})
         
@@ -91,44 +98,6 @@ def entrypoint():
     dir = Path("/tmp/stable-diffusion")
     if not dir.exists():
         dir.mkdir(exist_ok=True, parents=True)
-
-    # def show_mask(mask, ax, random_color=False):
-    #     if random_color:
-    #         color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
-    #     else:
-    #         color = np.array([30/255, 144/255, 255/255, 0.6])
-    #     h, w = mask.shape[-2:]
-    #     print(mask.shape)
-    #     mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
-    #     ax.imshow(mask_image)
-
-    # def show_masks_on_image(raw_image, masks, scores):
-    #     if len(masks.shape) == 4:
-    #         masks = masks.squeeze()
-    #     if scores.shape[0] == 1:
-    #         scores = scores.squeeze()
-
-    #     figs = []
-
-    #     for i, (mask, _) in enumerate(zip(masks, scores)):
-    #         fig, ax = plt.subplots(figsize=(15, 15))
-    #         mask = mask.cpu().detach()
-    #         ax.imshow(np.array(raw_image))
-    #         show_mask(mask, ax)
-    #         ax.axis("off")
-    #         figs.append(fig)
-        
-    #     return figs
-        
-    # figs = show_masks_on_image(raw_image, masks[0], scores)
-    # buf = BytesIO()
-    # for i, fig in enumerate(figs):
-    #     fig.savefig(buf, format="PNG")
-    #     output_path = dir / f"output_{i}.png"
-    #     print(f"Saving it to {output_path}")
-    #     with open(output_path, "wb") as f:
-    #         f.write(buf.getvalue())
-
 
     def apply_mask_to_image(mask, image, random_color=False):
         if random_color:
