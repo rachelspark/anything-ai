@@ -25,6 +25,7 @@ export const ImageCanvas = ({
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!imgRef.current) return;
         const rect = imgRef.current.getBoundingClientRect();
+
         setOriginalDims({ width: rect.width, height: rect.height });
         setDrawing(true);
         setRectangle({ 
@@ -91,9 +92,9 @@ export const ImageCanvas = ({
 
     return (
         
-        <div className={`${className ? className : "relative inline-block"}`} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onDragStart={handleDragStart}>
-            <div className="relative w-full h-full">
-                <Image src={imageUrl} ref={imgRef} alt={alt} width="0" height="0" className="w-full h-auto"/>
+        <div className={`${className ? className : "relative h-full flex items-center justify-center"}`}>
+            <div className="relative w-auto h-auto inline-block">
+                <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onDragStart={handleDragStart}/>
                 {showCursor && (
                     <div
                         style={{
@@ -106,6 +107,7 @@ export const ImageCanvas = ({
                             backgroundColor: 'rgba(0, 0, 255, 0.5)',
                             transform: 'translate(-50%, -50%)',
                             pointerEvents: 'none',
+
                         }}
                     />
                 )}

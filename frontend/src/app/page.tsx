@@ -5,26 +5,28 @@ import axios, { isAxiosError } from "axios";
 import Image from 'next/image'
 import { ImageCanvas } from './components/ImageCanvas';
 import { TextInput } from './components/TextInput';
-import { FileUpload } from './components/FileUpload';
 import MainComponent from './components/MainComponent';
+import Welcome from './components/Welcome';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const API_ENDPOINT = "https://rachelspark--replace-anything-fastapi-app-dev.modal.run";
-
 export default function Home() {
   const [welcome, setWelcome] = useState(true);
+
+  const handleClose = () => {
+    setWelcome(false);
+  };
 
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     >
+      <Welcome open={welcome} onClose={handleClose}/>
       <div>
-        <div className="relative text-center pb-10">
-          <div className="animate-text bg-gradient-to-r from-violet-500 via-indigo-600 to-blue-900 bg-clip-text text-transparent text-7xl px-2 pb-6 font-black">
+        <div className="absolute inset-x-0 top-10 text-center">
+          <button className="text-4xl sm:text-5xl fontvar-heading mb-2 sm:mb-4" onClick={() => setWelcome(true)}>
             anything ai
-          </div>
-          <div className="text-xl text-black">replace something with anything in an image using Stable Diffusion</div>
+          </button>
         </div>
         <MainComponent/>
       </div>
