@@ -5,14 +5,14 @@ export const ImageCanvas = ({
     imageUrl,
     alt,
     className,
-    onClick,
     onBoxDrawn,
+    isDisabled,
 }: {
     imageUrl: string;
     alt: string;
     className?: string;
-    onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onBoxDrawn?: (coordinates: { top: number; left: number; width: number; height: number, naturalWidth: number, naturalHeight: number }) => void;
+    isDisabled?: boolean;
 }) => {
     const [drawing, setDrawing] = useState(false);
     const [rectangle, setRectangle] = useState<{ top: number; left: number; width: number; height: number }>({ top: 0, left: 0, width: 0, height: 0 });
@@ -23,7 +23,7 @@ export const ImageCanvas = ({
     const [clickPos, setClickPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!imgRef.current) return;
+        if (isDisabled || !imgRef.current) return;
         const rect = imgRef.current.getBoundingClientRect();
 
         setOriginalDims({ width: rect.width, height: rect.height });
@@ -39,6 +39,7 @@ export const ImageCanvas = ({
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isDisabled) return;
         setCursorPos({ x: e.clientX, y: e.clientY });
 
         if (!drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
@@ -49,7 +50,7 @@ export const ImageCanvas = ({
     };
 
     const handleMouseUp = () => {
-        if (!drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
+        if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
         setDrawing(false);
 
         console.log(imgRef.current.naturalWidth)
@@ -92,9 +93,15 @@ export const ImageCanvas = ({
 
     return (
         
-        <div className={`${className ? className : "relative h-full flex items-center justify-center"}`}>
+        <div className={`${className ? className : "flex items-center max-w-full max-h-full justify-center"}`}>
             <div className="relative w-auto h-auto inline-block">
-                <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onDragStart={handleDragStart}/>
+                <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full" 
+                    onMouseDown={!isDisabled ? handleMouseDown : undefined} 
+                    onMouseMove={!isDisabled ? handleMouseMove : undefined} 
+                    onMouseUp={!isDisabled ? handleMouseUp: undefined} 
+                    onMouseEnter={!isDisabled ? handleMouseEnter : undefined} 
+                    onMouseLeave={!isDisabled ? handleMouseLeave : undefined} 
+                    onDragStart={handleDragStart}/>
                 {showCursor && (
                     <div
                         style={{
@@ -140,8 +147,30 @@ export const ImageCanvas = ({
                         }}
                     />
                 )}
-                
-
+                {isDisabled && (
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '1.5rem',
+                        zIndex: 2
+                    }}>
+                        <div className="flex flex-col items-center">
+                            <svg className="animate-spin ml-2 mt-1 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-50" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {/* <div className="text-sm text-white p-4">Approximately 2 minutes...</div> */}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

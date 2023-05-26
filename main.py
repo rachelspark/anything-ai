@@ -89,7 +89,7 @@ def fastapi_app():
         return image_padded, mask_padded, (top_pad, bottom_pad, left_pad, right_pad)
 
     @app.post("/generate-mask")
-    def generate_mask(point_coords: str = Form(...), file: UploadFile = File(...)):
+    def generate_mask(point_coords: str = Form(...), file: UploadFile = File(...), mask_state: str = Form(...)):
         img_content = file.file.read()
         raw_image = Image.open(BytesIO(img_content)).convert("RGBA")
         is_point, points_tensor = process_coords(point_coords)
@@ -123,8 +123,10 @@ def fastapi_app():
                 masked_image = apply_mask_to_image(mask, raw_image)
                 masked_images.append(masked_image)
 
-                # binary_mask = np.where(mask > 0.5, 1, 0)
-                binary_mask = np.where(mask > 0.5, 0, 1)
+                if mask_state == "replace": # replace background
+                    binary_mask = np.where(mask > 0.5, 0, 1)
+                else: # fill in object
+                    binary_mask = np.where(mask > 0.5, 1, 0)
                 binary_masks.append(binary_mask)
             
             return masked_images, binary_masks
@@ -159,8 +161,6 @@ def fastapi_app():
 
             img_padded, mask_padded, padding_factors = resize_and_pad(img_arr, mask_arr)
             img_padded = img_padded[:, :, :3]
-            print(img_padded.shape)
-            print(mask_padded.shape)
 
             for i in range(4):
                 background_image = sd.run_inference.call(prompt, img_padded, mask_padded)

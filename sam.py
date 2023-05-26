@@ -11,7 +11,6 @@ def download_model():
     from transformers import SamModel, SamProcessor
     import torch
 
-    # hugging_face_token = os.environ["HUGGINGFACE_TOKEN"]
     model = SamModel.from_pretrained("facebook/sam-vit-huge")
     processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
     model.save_pretrained(cache_path)
@@ -43,8 +42,6 @@ class SegmentAnything:
     def __enter__(self):
         from transformers import SamModel, SamProcessor
 
-        # torch.backends.cuda.matmul.allow_tf32 = True
-
         self.model = SamModel.from_pretrained("facebook/sam-vit-huge")
         self.processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
 
@@ -59,10 +56,6 @@ class SegmentAnything:
         # calculate image embeddings
         inputs = self.processor(img, return_tensors="pt")
         image_embeddings = self.model.get_image_embeddings(inputs["pixel_values"])
-        print(image_embeddings.dtype)
-
-        print(input_points)
-        print(input_box)
         inputs = self.processor(img, input_points=input_points, input_boxes=input_box, return_tensors="pt")
         inputs.pop("pixel_values", None)
         inputs.update({"image_embeddings": image_embeddings})
