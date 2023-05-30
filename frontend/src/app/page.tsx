@@ -32,7 +32,7 @@ export default function Home() {
           <MainComponent/>
         </div>
       </div>
-      <footer className="w-full text-center text-xs text-gray-400">
+      <footer className="w-full text-center text-xs text-gray-400 p-4">
           Built by <a className="hover:text-gray-500 underline" target="_blank" rel="noopener noreferref" href="https://twitter.com/rachelsupark">Rachel Park</a> with <a className="underline hover:text-gray-500" target="_blank" rel="noopener noreferref" href="https://twitter.com/rachelsupark">code</a> on Github
         </footer>
     </main>

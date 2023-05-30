@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useState, useRef, useEffect } from 'react';
+import {isMobile} from 'react-device-detect';
 
 export const ImageCanvas = ({
     imageUrl,
@@ -66,6 +67,44 @@ export const ImageCanvas = ({
         });
     };
 
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        if (isDisabled || !imgRef.current) return;
+        const rect = imgRef.current.getBoundingClientRect();
+        setOriginalDims({ width: rect.width, height: rect.height });
+        setDrawing(true);
+        setRectangle({ 
+            top: (e.touches[0].clientY - rect.top) / rect.height, 
+            left: (e.touches[0].clientX - rect.left) / rect.width, 
+            width: 0, 
+            height: 0 
+        });
+    };
+    
+    const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+        if (isDisabled) return;
+        setCursorPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    
+        if (!drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
+        const rect = imgRef.current.getBoundingClientRect();
+        const newWidth = (e.touches[0].clientX - rect.left) / rect.width - rectangle.left;
+        const newHeight = (e.touches[0].clientY - rect.top) / rect.height - rectangle.top;
+        setRectangle((r) => ({ ...r, width: newWidth, height: newHeight }));
+    };
+    
+    const handleTouchEnd = () => {
+        if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
+        setDrawing(false);
+    
+        if (onBoxDrawn) onBoxDrawn({
+            top: rectangle.top,
+            left: rectangle.left,
+            width: rectangle.width,
+            height: rectangle.height,
+            naturalWidth: imgRef.current.naturalWidth,
+            naturalHeight: imgRef.current.naturalHeight,
+        });
+    };
+
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
@@ -96,11 +135,14 @@ export const ImageCanvas = ({
         <div className={`${className ? className : "flex items-center max-w-full max-h-full justify-center"}`}>
             <div className="relative w-auto h-auto inline-block">
                 <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full" 
+                    onTouchStart={!isDisabled ? handleTouchStart : undefined}
+                    onTouchMove={!isDisabled ? handleTouchMove : undefined}
+                    onTouchEnd={!isDisabled ? handleTouchEnd : undefined}
                     onMouseDown={!isDisabled ? handleMouseDown : undefined} 
                     onMouseMove={!isDisabled ? handleMouseMove : undefined} 
                     onMouseUp={!isDisabled ? handleMouseUp: undefined} 
-                    onMouseEnter={!isDisabled ? handleMouseEnter : undefined} 
-                    onMouseLeave={!isDisabled ? handleMouseLeave : undefined} 
+                    onMouseEnter={!isDisabled && !isMobile ? handleMouseEnter : undefined}
+                    onMouseLeave={!isDisabled && !isMobile ? handleMouseLeave : undefined} 
                     onDragStart={handleDragStart}/>
                 {showCursor && (
                     <div
