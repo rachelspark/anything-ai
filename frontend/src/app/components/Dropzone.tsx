@@ -1,10 +1,10 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-export default function Dropzone(props) {
+export default function Dropzone(props: { onImageDropped: any; userUploadedImage: any; }) {
   const onImageDropped = props.onImageDropped;
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: any[]) => {
       onImageDropped(acceptedFiles[0]);
     },
     [onImageDropped]

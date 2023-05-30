@@ -24,7 +24,7 @@ export default function Home() {
       <Welcome open={welcome} onClose={handleClose}/>
       <div className="w-full">
         <header className="absolute inset-x-0 top-10 text-center">
-          <button className="fontvar-heading font-sans text-4xl mb-10 sm:mb-10 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
+          <button className="font-heading font-sans text-4xl mb-10 sm:mb-10 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
             anything
           </button>
         </header>
@@ -32,7 +32,7 @@ export default function Home() {
           <MainComponent/>
         </div>
       </div>
-      <footer className="pt-12 w-full text-center text-xs text-gray-400">
+      <footer className="w-full text-center text-xs text-gray-400">
           Built by <a className="hover:text-gray-500" target="_blank" rel="noopener noreferref" href="https://twitter.com/rachelsupark">Rachel Park</a>
           <span className="mx-1.5">|</span>
           <a className="hover:text-gray-500" target="_blank" rel="noopener noreferref" href="https://twitter.com/rachelsupark">Details + Code</a>

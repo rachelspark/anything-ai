@@ -51,7 +51,7 @@ export default function MainComponent() {
       await generateImages();
     }
 
-    const startOver = async (e) => {
+    const startOver = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         setFile(undefined);
         setMaskFile(undefined);

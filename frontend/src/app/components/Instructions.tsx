@@ -1,7 +1,7 @@
 import instructions from "../utils/instructions.json"
 
-export default function Instructions({ index }) {
-    var instruction = instructions[index]
+export default function Instructions(props: { index: any }) {
+    var instruction = instructions[props.index]
 
     return (
         <div className="mb-4">

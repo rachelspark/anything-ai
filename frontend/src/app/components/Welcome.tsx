@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Slide } from '@mui/material';
 
-export default function Welcome({ open, onClose }) {
+export default function Welcome(props:{ open: boolean, onClose: any }) {
   const [height, setHeight] = useState(0);
   const [init, setInit] = useState(false);
   const welcomeEl = useRef(null);
@@ -12,17 +12,17 @@ export default function Welcome({ open, onClose }) {
 
 
 
-  function handleWheel(event) {
-    if (open) {
+  function handleWheel(event: { deltaY: number; }) {
+    if (props.open) {
       if (event.deltaY > 0) {
-        onClose();
+        props.onClose();
       }
     }
   }
 
   return (
     <div>
-        <Slide direction="down" in={open} mountOnEnter unmountOnExit>
+        <Slide direction="down" in={props.open} mountOnEnter unmountOnExit>
         <div
           className="fixed z-40 inset-3 sm:inset-6 md:inset-8 rounded-2xl border border-gray-300 bg-white px-4 sm:px-6 overflow-y-auto"
           onWheel={handleWheel}
@@ -44,7 +44,7 @@ export default function Welcome({ open, onClose }) {
                   <div className="relative h-full flex flex-col items-center">
                     <button className="rounded-full w-[180px] h-[56px] px-5 py-3 m-12 bg-gradient-to-r from-violet-800 via-indigo-700 to-blue-700 text-white text-lg
                      hover:shadow-2xl hover:shadow-indigo-600/50"
-                      onClick={() => onClose()}>
+                      onClick={() => props.onClose()}>
                           Get Started
                           <svg
                           width="24"

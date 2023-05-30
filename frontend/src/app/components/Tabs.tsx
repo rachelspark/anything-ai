@@ -1,13 +1,13 @@
 import { Fragment } from 'react'
 import { Tab } from '@headlessui/react'
 
-export default function Tabs({ setMaskState } ) {
+export default function Tabs(props: { setMaskState: any } ) {
   return (
     <div className="w-full py-2">
         <Tab.Group
             onChange={(index) => {
                 const maskStates = ["replace", "fill"];
-                setMaskState(maskStates[index])
+                props.setMaskState(maskStates[index])
                 console.log('Changed selected tab to:', maskStates[index])
             }}
         >
