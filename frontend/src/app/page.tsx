@@ -24,7 +24,7 @@ export default function Home() {
       <Welcome open={welcome} onClose={handleClose}/>
       <div className="w-full">
         <header className="absolute inset-x-0 top-10 text-center">
-          <button className="text-4xl font-medium mb-10 sm:mb-10 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
+          <button className="fontvar-heading font-sans text-4xl mb-10 sm:mb-10 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
             anything
           </button>
         </header>

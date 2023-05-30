@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -7,6 +9,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      lineHeight: {
+        '12': '3.5rem',
+      },
+      fontFamily: {
+        'sans': ['Roboto FlexVariable', ...defaultTheme.fontFamily.sans],
+      },
       animation: {
         text: 'text 5s ease infinite',
       },

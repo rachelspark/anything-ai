@@ -21,7 +21,7 @@ export default function Dropzone(props) {
 
   return (
     <div
-      className="relative w-full h-full min-h-[400px] flex border-4 border-dashed border-gray-200 text-gray-400 text-sm text-center cursor-pointer select-none p-4 hover:text-gray-600"
+      className="relative w-full h-full min-h-[280px] sm:min-h-[400px] flex border-4 border-dashed border-gray-200 text-gray-400 text-sm text-center cursor-pointer select-none p-4 hover:text-gray-600"
       {...getRootProps()}
     >
       <div className="m-auto">

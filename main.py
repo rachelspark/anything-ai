@@ -43,16 +43,16 @@ def fastapi_app():
         is_point = False
         point_coords = [float(coord) for coord in point_coords.split(',')]
         point_coords = np.asarray(point_coords)
-        print(point_coords)
 
-        if (point_coords[0] == point_coords[2]) and (point_coords[1] == point_coords[3]): # just an input point, not an input box
+        if (point_coords[0] == point_coords[2]) and (point_coords[1] == point_coords[3]): # just a point, not a box
             is_point = True
             point_coords = point_coords[0:2]
 
         # Convert points to a PyTorch tensor
-        points_tensor = torch.tensor([point_coords])
+        points_tensor = torch.tensor(point_coords)
+        print(points_tensor)
         # Reshape the tensor to have 4 dimensions
-        points_tensor_4d = points_tensor.unsqueeze(0).unsqueeze(0)
+        points_tensor_4d = points_tensor.unsqueeze(0).unsqueeze(0).unsqueeze(0)
         print(points_tensor_4d)
         
         return is_point, points_tensor_4d

@@ -117,7 +117,7 @@ export default function MainComponent() {
       } catch (e: unknown) {
             setLoadingMask(false)
             if (isAxiosError(e)) {
-            setErrorMessage("Sorry, we're running into an issue. Please try again in a bit!")
+            setErrorMessage("Sorry, we're running into an issue. Try again in a bit!")
             }
       }
     }
@@ -152,7 +152,7 @@ export default function MainComponent() {
       } catch (e: unknown) {
         setLoadingImages(false)
         if (isAxiosError(e)) {
-          setErrorMessage("Sorry, we're running into an issue. Please try again in a bit!")
+          setErrorMessage("Sorry, we're running into an issue. Try again in a bit!")
         }
       }
     }
@@ -162,8 +162,8 @@ export default function MainComponent() {
         className={`flex w-full items-center justify-between py-10 ${inter.className}`}
       >
         <div className="relative w-full">
-          <div className="flex flex-row">
-            <div className="flex items-center justify-center bg-white w-3/4 h-full min-h-[512px] shadow-md border border-gray-200 rounded-md p-10">
+          <div className="flex flex-col justify-center sm:flex-row">
+            <div className="flex justify-center bg-white w-full sm:w-3/4 h-full sm:min-h-[512px] shadow-md border border-gray-200 rounded-md p-10 mb-4 sm:mb-auto">
                 {!file && (
                     <Dropzone onImageDropped={setFile} userUploadedImage={file}/>
                 )}
@@ -193,7 +193,7 @@ export default function MainComponent() {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-50" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    {/* <div className="text-sm text-white p-4">Approximately 30 secs...</div> */}
+                                    <div className="text-sm text-white p-4">Approximately 30 secs...</div>
                                 </div>
                             </div>
                             
@@ -222,14 +222,14 @@ export default function MainComponent() {
                     </div>
                 )}
             </div>
-            <div className="relative bg-white w-1/4 min-w-[220px] min-h-[512px] border border-gray-200 shadow-md rounded-md ml-4 p-2 justify-items-center">
-              <div className="flex flex-col p-4"> 
+            <div className="relative bg-white max-w-full sm:w-1/4 sm:min-w-[220px] max-h-full sm:min-h-[512px] border border-gray-200 shadow-md rounded-md sm:ml-4 p-2 justify-items-center">
+              <div className="flex flex-col p-4 pb-20"> 
                 {!binaryMask && (
                     <div>
                         <Instructions index={0}/>
                         <Tabs setMaskState={setMaskState}/>
                         {errorMessage ? (
-                            <div className="text-red-500 text-xs text-center text-wrap m-4">{errorMessage}</div>
+                            <div className="text-red-500 text-xs text-center text-wrap my-4">{errorMessage}</div>
                             ) : <div className="m-4"/>
                         }
                         {(!loadingMask) ?  
@@ -240,7 +240,7 @@ export default function MainComponent() {
                     </div>
                 )}
                 {(binaryMask && generatedImages.length == 0) && (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col h-full">
                         <Instructions index={1}/>
                         <TextInput prompt={prompt} setPrompt={setPrompt} handleSubmit={handleSubmit} loading={loadingImages} />
                     </div>
