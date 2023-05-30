@@ -29,7 +29,7 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
           ref={welcomeEl}
         >
           {init && (
-            <div className="relative grid grid-rows-6 grid-flow-col w-full h-full justify-items-center content-center">
+            <div className="relative grid grid-rows-6 grid-flow-col max-w-full max-h-full justify-items-center content-center">
                 <header className="row-start-1">
                     <div className="font-heading font-sans text-center text-3xl sm:text-4xl m-4 sm:m-8">
                         anything

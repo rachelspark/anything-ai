@@ -13,8 +13,8 @@ export const TextInput = (props:{ prompt: string, setPrompt: (arg0: string) => v
           onChange={(e) => props.setPrompt(e.target.value)}
         />
         {!props.loading ? 
-          <button type="submit" className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-lg text-white bg-indigo-800 hover:bg-indigo-900">Generate Image</button> 
-          : <button className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-lg text-white bg-indigo-900" disabled>
+          <button type="submit" className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-sm text-white bg-indigo-800 hover:bg-indigo-900">Generate Image</button> 
+          : <button className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-sm text-white bg-indigo-900" disabled>
             Generating
         </button>}
       </div>
