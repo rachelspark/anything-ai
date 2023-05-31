@@ -13,7 +13,6 @@ import numpy as np
 model_id = "stabilityai/stable-diffusion-2-inpainting"
 cache_path = "/vol/cache"
 
-
 def download_models():
     import diffusers
     import torch
