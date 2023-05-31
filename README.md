@@ -4,6 +4,8 @@ Click and fill anything in your image with a simple text prompt. Segment Anythin
 
 [anything-ai.com](https://www.anything-ai.com/) is a generative photo editing tool that accepts an image, creates object masks (holes) based on where you click, and then takes in a prompt to generate content and magically fill that hole with anything you want. 
 
+![Demo Video](/frontend/public/anything-ai-demo.mp4)
+
 ## Background & Technical Details
 *Anything* takes the most recent research in image inpainting, focusing on [Inpaint Anything](https://arxiv.org/abs/2304.06790)'s Remove Anything and Fill Anything, and makes these powerful vision models easy to use on the web. Image segmentation is powered by Meta's [Segment-Anything Model (SAM)](https://segment-anything.com/) and content generation is powered by [Stable Diffusion Inpainting](https://arxiv.org/abs/2112.10752). The backend is served using Python (on a [Modal](https://modal.com/) endpoint) with a [Next.js](https://nextjs.org/) frontend.
 
