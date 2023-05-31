@@ -4,6 +4,8 @@ from PIL import Image
 from typing import Any, Dict, List, Tuple
 from io import BytesIO
 
+# utils from Inpaint Anything repo (https://github.com/geekyutao/Inpaint-Anything/blob/main/utils/utils.py)
+
 def dilate_mask(mask, dilate_factor=20):
     mask = mask.astype(np.uint8)
     mask = cv2.dilate(

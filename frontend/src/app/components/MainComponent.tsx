@@ -40,7 +40,6 @@ export default function MainComponent() {
       const y2 = (rectangle.top + rectangle.height) * rectangle.naturalHeight;
   
       setCoords([x1, y1, x2, y2]);
-      console.log(`Top left corner: (${x1}, ${y1}), Bottom right corner: (${x2}, ${y2})`);
     };
   
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
