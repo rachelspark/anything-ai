@@ -8,7 +8,6 @@ export default function Tabs(props: { setMaskState: any } ) {
             onChange={(index) => {
                 const maskStates = ["replace", "fill"];
                 props.setMaskState(maskStates[index])
-                console.log('Changed selected tab to:', maskStates[index])
             }}
         >
         <Tab.List className="flex space-x-1 rounded bg-indigo-800/20 p-1">

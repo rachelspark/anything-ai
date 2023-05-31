@@ -46,24 +46,31 @@ class SegmentAnything:
         self.processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
 
     @modal.method()
-    def get_image_embeddings():
-        pass
-
-    @modal.method()
     def predict_masks(
         self, img: Image, input_points: List[List[float]] = None, input_box: List[List[float]] = None
     ) -> list[bytes]:
+        import numpy as np
+        
         # calculate image embeddings
         inputs = self.processor(img, return_tensors="pt")
         image_embeddings = self.model.get_image_embeddings(inputs["pixel_values"])
-        inputs = self.processor(img, input_points=input_points, input_boxes=input_box, return_tensors="pt")
+        inputs = self.processor(
+            img, 
+            input_points=input_points, 
+            input_boxes=input_box, 
+            return_tensors="pt"
+        )
         inputs.pop("pixel_values", None)
         inputs.update({"image_embeddings": image_embeddings})
         
         with torch.no_grad():
             outputs = self.model(**inputs)
 
-        masks = self.processor.image_processor.post_process_masks(outputs.pred_masks.cpu(), inputs["original_sizes"].cpu(), inputs["reshaped_input_sizes"].cpu())
+        masks = self.processor.image_processor.post_process_masks(
+            outputs.pred_masks.cpu(), 
+            inputs["original_sizes"].cpu(), 
+            inputs["reshaped_input_sizes"].cpu()
+        )
         scores = outputs.iou_scores
 
         return masks, scores

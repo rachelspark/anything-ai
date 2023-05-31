@@ -21,15 +21,21 @@ export default function MainComponent() {
     const [maskedImage, setMaskedImage] = useState("");
     const [binaryMask, setBinaryMask] = useState("");
     const [generatedImages, setGeneratedImages] = useState([]);
+
+    
+    const [binaryMasks, setBinaryMasks] = useState([]);
+    const [coloredMasks, setColoredMasks] = useState([]);
+    const [selectedMaskIndex, setSelectedMaskIndex] = useState<number | null>(null);
+
     const [loadingMask, setLoadingMask] = useState(false)
     const [maskState, setMaskState] = useState("replace")
     const [loadingImages, setLoadingImages] = useState(false)
     const [errorMessage, setErrorMessage] = useState("");
     const [coords, setCoords] = useState([0, 0, 0, 0])
   
-    useEffect(() => {
-        setMaskFile(dataURLtoFile(binaryMask, "mask.png"))
-    }, [binaryMask]);
+    // useEffect(() => {
+    //     setMaskFile(dataURLtoFile(binaryMask, "mask.png"))
+    // }, [binaryMask]);
 
     useEffect(() => {
         setUploadedImageURL(file ? URL.createObjectURL(file) : "")
@@ -57,8 +63,9 @@ export default function MainComponent() {
         setMaskFile(undefined);
         setErrorMessage("");
         setPrompt("");
-        setMaskedImage("");
-        setBinaryMask("");
+        setSelectedMaskIndex(null);
+        setColoredMasks([]);
+        setBinaryMasks([]);
         setGeneratedImages([]);
         setLoadingMask(false);
         setLoadingImages(false);
@@ -104,13 +111,12 @@ export default function MainComponent() {
         formData.append("file", file!);
         formData.append("point_coords", coords.join(','));
         formData.append("mask_state", maskState.toString()); 
-        console.log(formData) 
         const axiosResponse = await axios.post(API_ENDPOINT + "/generate-mask", formData, {
           headers: headers,
         })
-        console.log(axiosResponse.data!)
-        setMaskedImage(axiosResponse.data!['colored_mask'])
-        setBinaryMask(axiosResponse.data!['binary_mask'])
+        setColoredMasks(axiosResponse.data!['colored_masks'])
+        setBinaryMasks(axiosResponse.data!['binary_masks'])
+        
         // resetting error and loading states
         setLoadingMask(false)
         setErrorMessage("")
@@ -131,7 +137,6 @@ export default function MainComponent() {
         setLoadingImages(true)
         setErrorMessage("")
         setPrompt(prompt)
-        console.log(prompt)
         const formData = new FormData();
         const headers = {
           accept: "application/json",
@@ -143,7 +148,6 @@ export default function MainComponent() {
         const axiosResponse = await axios.post(API_ENDPOINT + "/generate-image", formData, {
           headers: headers,
         })
-        console.log(axiosResponse.data!)
         setGeneratedImages(axiosResponse.data!['images'])
   
         // resetting error and loading states
@@ -163,44 +167,58 @@ export default function MainComponent() {
       >
         <div className="relative w-full">
           <div className="flex flex-col justify-center sm:flex-row">
-            <div className="flex justify-center bg-white w-full sm:w-3/4 h-full sm:min-h-[512px] shadow-md border border-gray-200 rounded-md p-10 mb-4 sm:mb-auto">
+            <div className="flex justify-center bg-white max-w-full sm:w-3/4 sm:min-h-[512px] shadow-md border border-gray-200 rounded-md p-10 mb-4 sm:mb-auto">
                 {!file && (
                     <Dropzone onImageDropped={setFile} userUploadedImage={file}/>
                 )}
-                {(uploadedImageURL != "" && !maskedImage) && (
+                {(uploadedImageURL != "" && coloredMasks.length == 0) && (
                     <ImageCanvas imageUrl={uploadedImageURL} alt="UserUploadedImage" onBoxDrawn={handleBoxDrawn} isDisabled={loadingMask}/>
                 )}
-                {(maskedImage && generatedImages.length == 0) &&
-                    <div className="relative items-center">
-                        <Image src={`data:image/png;base64,${maskedImage}`} alt={''} width={512} height={512}/>
-                        {loadingImages && (
-                            <div style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#fff',
-                                fontSize: '1.5rem',
-                                zIndex: 2
-                            }}>
-                                <div className="flex flex-col items-center">
-                                    <svg className="animate-spin ml-2 mt-1 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-50" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <div className="text-sm text-center text-white p-4">Approximately 30 secs...</div>
-                                </div>
-                            </div>
-                            
-                        )}
+                {(coloredMasks.length != 0 && !maskFile) &&
+                  <div className="grid grid-cols-3 content-center">
+                      {coloredMasks.map((image, index) =>
+                          <div 
+                          className={`relative group mx-1`} 
+                          key={index}
+                          onClick={() => setSelectedMaskIndex(index)}
+                        >
+                          <Image src={`data:image/png;base64,${image}`} className={`object-contain ${selectedMaskIndex === index ? 'border-2 border-indigo-600' : 'hover:border-2 hover:border-indigo-200'}`} alt={''} width={512} height={512}/>
+                        </div>
+                      )}
                     </div>
+                                    
                 }
-                {generatedImages && (
+                {(maskFile && generatedImages.length == 0) &&
+                  <div className="relative items-center">
+                      <Image src={`data:image/png;base64,${coloredMasks[selectedMaskIndex!]}`} className="max-h-[600px]" alt={''} width={512} height={512}/>
+                      {loadingImages && (
+                          <div style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#fff',
+                              fontSize: '1.5rem',
+                              zIndex: 2
+                          }}>
+                              <div className="flex flex-col items-center">
+                                  <svg className="animate-spin ml-2 mt-1 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-50" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                  <div className="text-sm text-center text-white p-4">Approximately 30 secs...</div>
+                              </div>
+                          </div>
+                          
+                      )}
+                  </div>
+                }
+                {generatedImages.length > 0 && (
                     <div className= "grid grid-cols-2">
                     {generatedImages.map((image, index) =>
                         <div className="relative group" key={index}>
@@ -224,8 +242,8 @@ export default function MainComponent() {
             </div>
             <div className="relative bg-white max-w-full sm:w-1/4 sm:min-w-[220px] max-h-full sm:min-h-[512px] border border-gray-200 shadow-md rounded-md sm:ml-4 p-2 justify-items-center">
               <div className="flex flex-col px-4 pb-24"> 
-                {!binaryMask && (
-                    <div>
+                {coloredMasks.length == 0 && (
+                    <>
                         <Instructions index={0}/>
                         <Tabs setMaskState={setMaskState}/>
                         {errorMessage ? (
@@ -237,11 +255,18 @@ export default function MainComponent() {
                             : <button className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-sm text-white bg-indigo-900 " disabled>
                             Generating
                         </button>}
-                    </div>
+                    </>
                 )}
-                {(binaryMask && generatedImages.length == 0) && (
+                {(coloredMasks.length != 0 && !maskFile) && (
+                  <>
+                    <Instructions index={1}/>
+                    <button onClick={() => setMaskFile(dataURLtoFile(binaryMasks[selectedMaskIndex!], "mask.png"))} className="absolute inset-x-6 bottom-12 rounded px-6 py-3 text-sm text-white bg-indigo-800 hover:bg-indigo-900" disabled={selectedMaskIndex === null}>Select Mask</button> 
+                  </>
+                )
+                }
+                {(maskFile && generatedImages.length == 0) && (
                     <div className="flex flex-col h-full">
-                        <Instructions index={1}/>
+                        <Instructions index={2}/>
                         <TextInput prompt={prompt} setPrompt={setPrompt} handleSubmit={handleSubmit} loading={loadingImages} />
                     </div>
                 )}

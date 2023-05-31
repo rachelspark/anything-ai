@@ -23,6 +23,52 @@ export const ImageCanvas = ({
     const [showCursor, setShowCursor] = useState(false);
     const [clickPos, setClickPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+    let touchTimer: string | number | NodeJS.Timeout | null | undefined = null;
+
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        if (isDisabled || !imgRef.current) return;
+        const rect = imgRef.current.getBoundingClientRect();
+        setOriginalDims({ width: rect.width, height: rect.height });
+
+        // Start a timer on touchstart event, for long press
+        touchTimer = setTimeout(() => {
+            setDrawing(true);
+            setRectangle({
+                top: (e.touches[0].clientY - rect.top) / rect.height,
+                left: (e.touches[0].clientX - rect.left) / rect.width,
+                width: 0,
+                height: 0
+            });
+        }, 500); 
+    };
+
+    const handleTouchEnd = () => {
+        if (touchTimer !== null) {
+            clearTimeout(touchTimer); // Clear the timer on touchend event
+            touchTimer = null;
+        }
+        if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
+        setDrawing(false);
+        if (onBoxDrawn) onBoxDrawn({
+            top: rectangle.top,
+            left: rectangle.left,
+            width: rectangle.width,
+            height: rectangle.height,
+            naturalWidth: imgRef.current.naturalWidth,
+            naturalHeight: imgRef.current.naturalHeight,
+        });
+    };
+
+    const handleTouchCancel = () => {
+        if (touchTimer !== null) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+        }
+        if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
+        setDrawing(false);
+    };
+
+
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (isDisabled || !imgRef.current) return;
         const rect = imgRef.current.getBoundingClientRect();
@@ -54,9 +100,6 @@ export const ImageCanvas = ({
         if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
         setDrawing(false);
 
-        console.log(imgRef.current.naturalWidth)
-        console.log(imgRef.current.naturalHeight)
-
         if (onBoxDrawn) onBoxDrawn({
             top: rectangle.top,
             left: rectangle.left,
@@ -64,19 +107,6 @@ export const ImageCanvas = ({
             height: rectangle.height,
             naturalWidth: imgRef.current.naturalWidth,
             naturalHeight: imgRef.current.naturalHeight,
-        });
-    };
-
-    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-        if (isDisabled || !imgRef.current) return;
-        const rect = imgRef.current.getBoundingClientRect();
-        setOriginalDims({ width: rect.width, height: rect.height });
-        setDrawing(true);
-        setRectangle({ 
-            top: (e.touches[0].clientY - rect.top) / rect.height, 
-            left: (e.touches[0].clientX - rect.left) / rect.width, 
-            width: 0, 
-            height: 0 
         });
     };
     
@@ -91,22 +121,15 @@ export const ImageCanvas = ({
         setRectangle((r) => ({ ...r, width: newWidth, height: newHeight }));
     };
     
-    const handleTouchEnd = () => {
-        if (isDisabled || !drawing || !imgRef.current || !originalDims.width || !originalDims.height) return;
-        setDrawing(false);
-    
-        if (onBoxDrawn) onBoxDrawn({
-            top: rectangle.top,
-            left: rectangle.left,
-            width: rectangle.width,
-            height: rectangle.height,
-            naturalWidth: imgRef.current.naturalWidth,
-            naturalHeight: imgRef.current.naturalHeight,
-        });
-    };
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
+    };
+
+    const handleContextMenu = (e: React.SyntheticEvent) => {
+        if (isMobile) {
+            e.preventDefault();
+        }
     };
 
     // add mouse enter and leave event handlers
@@ -134,16 +157,19 @@ export const ImageCanvas = ({
         
         <div className={`${className ? className : "flex items-center max-w-full max-h-full justify-center"}`}>
             <div className="relative w-auto h-auto inline-block">
-                <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full" 
+                <Image src={imageUrl} ref={imgRef} alt={alt} width={768} height={512} className="object-contain w-full h-full max-h-[600px]" 
                     onTouchStart={!isDisabled ? handleTouchStart : undefined}
                     onTouchMove={!isDisabled ? handleTouchMove : undefined}
                     onTouchEnd={!isDisabled ? handleTouchEnd : undefined}
+                    onTouchCancel={!isDisabled ? handleTouchCancel : undefined}
                     onMouseDown={!isDisabled ? handleMouseDown : undefined} 
                     onMouseMove={!isDisabled ? handleMouseMove : undefined} 
                     onMouseUp={!isDisabled ? handleMouseUp: undefined} 
                     onMouseEnter={!isDisabled && !isMobile ? handleMouseEnter : undefined}
                     onMouseLeave={!isDisabled && !isMobile ? handleMouseLeave : undefined} 
-                    onDragStart={handleDragStart}/>
+                    onDragStart={handleDragStart}
+                    onContextMenu={handleContextMenu}
+                    />
                 {showCursor && (
                     <div
                         style={{
