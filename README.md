@@ -2,7 +2,8 @@
 
 Click and fill anything in your image with a simple text prompt. Segment Anything meets Stable Diffusion, in your browser.
 
-![Demo Video](https://github.com/rachelspark/anything-ai/assets/33185836/1920a7c6-75b6-407f-80de-f4ea06e0804f)
+<img width="700px" alt="Demo Image" src="./frontend/public/social-image.png">
+
 
 [anything-ai.com](https://www.anything-ai.com/) is a generative photo editing tool that accepts an image, creates object masks (holes) based on where you click, and then takes in a prompt to generate content and magically fill that hole with anything you want. 
 
