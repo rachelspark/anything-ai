@@ -22,7 +22,13 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
 
   return (
     <div>
-        <Slide direction="down" in={props.open} mountOnEnter unmountOnExit>
+        <Slide 
+          direction="down" 
+          in={props.open} 
+          timeout={400}
+          mountOnEnter 
+          unmountOnExit
+        >
         <div
           className="fixed z-40 inset-3 sm:inset-6 md:inset-8 rounded-2xl border border-gray-300 bg-white px-4 sm:px-6 overflow-y-auto"
           onWheel={handleWheel}
@@ -62,7 +68,7 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
                       </button>
                       <div className="flex justify-center items-center relative sm:h-[400px]">
                       <video autoPlay loop muted playsInline className="object-contain max-w-full max-h-full rounded-md">
-                        <source src="/anything-demo.mp4" />
+                        <source src="/anything-ai-demo.mp4" />
                       </video>
                     </div>
                   </div>

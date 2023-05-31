@@ -11,31 +11,22 @@ import Instructions from './Instructions';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const API_ENDPOINT = "https://rachelspark--replace-anything-fastapi-app-dev.modal.run";
+const API_ENDPOINT = "https://rachelspark--replace-anything-fastapi-app.modal.run";
 
 export default function MainComponent() {
     const [file, setFile] = useState<File>();
     const [maskFile, setMaskFile] = useState<File>();
     const [uploadedImageURL, setUploadedImageURL] = useState("");
     const [prompt, setPrompt] = useState("");
-    const [maskedImage, setMaskedImage] = useState("");
-    const [binaryMask, setBinaryMask] = useState("");
     const [generatedImages, setGeneratedImages] = useState([]);
-
-    
     const [binaryMasks, setBinaryMasks] = useState([]);
     const [coloredMasks, setColoredMasks] = useState([]);
     const [selectedMaskIndex, setSelectedMaskIndex] = useState<number | null>(null);
-
     const [loadingMask, setLoadingMask] = useState(false)
     const [maskState, setMaskState] = useState("replace")
     const [loadingImages, setLoadingImages] = useState(false)
     const [errorMessage, setErrorMessage] = useState("");
     const [coords, setCoords] = useState([0, 0, 0, 0])
-  
-    // useEffect(() => {
-    //     setMaskFile(dataURLtoFile(binaryMask, "mask.png"))
-    // }, [binaryMask]);
 
     useEffect(() => {
         setUploadedImageURL(file ? URL.createObjectURL(file) : "")
@@ -84,7 +75,6 @@ export default function MainComponent() {
     }
     
     function downloadBase64File(linkSource: string) {
-        // const linkSource = `data:${contentType};base64,${base64Data}`;
         const downloadLink = document.createElement("a");
         downloadLink.href = linkSource;
         downloadLink.download = "download.png";
@@ -211,7 +201,7 @@ export default function MainComponent() {
                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                   <path className="opacity-50" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                   </svg>
-                                  <div className="text-sm text-center text-white p-4">Approximately 30 secs...</div>
+                                  {/* <div className="text-sm text-center text-white p-4">Approximately 30 secs...</div> */}
                               </div>
                           </div>
                           
