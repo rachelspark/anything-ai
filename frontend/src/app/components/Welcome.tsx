@@ -42,9 +42,9 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
                     </div>
                 </header>
                 <div className="row-start-2 row-span-4 text-center items-center mx-12 my-8">
-                  <div className="max-w-[800px]">
+                  <div className="max-w-[600px]">
                     <p className="font-medium text-4xl md:text-5xl md:leading-12">
-                            Replace anything in your image, with just a click
+                            Click and fill anything, with a simple text prompt
                     </p>
                   </div>
                   <div className="relative h-full flex flex-col items-center">
