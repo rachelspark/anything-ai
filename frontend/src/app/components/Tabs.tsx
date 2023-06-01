@@ -10,7 +10,7 @@ export default function Tabs(props: { setMaskState: any } ) {
                 props.setMaskState(maskStates[index])
             }}
         >
-        <Tab.List className="flex space-x-1 rounded bg-indigo-800/20 p-1">
+        <Tab.List className="flex space-x-1 text-xs rounded bg-indigo-800/20 p-1">
             <Tab as={Fragment}>
             {({ selected }) => (
                 <button
@@ -19,7 +19,7 @@ export default function Tabs(props: { setMaskState: any } ) {
                     (selected ? ' bg-white shadow text-indigo-800' : 'text-blue-100 hover:bg-white/[0.20] hover:text-black')
                 }
                 >
-                Replace
+                Background
                 </button>
             )}
             </Tab>
@@ -31,14 +31,14 @@ export default function Tabs(props: { setMaskState: any } ) {
                     (selected ? ' bg-white shadow text-indigo-800' : 'text-blue-100 hover:bg-white/[0.20] hover:text-black')
                 }
                 >
-                Fill
+                Object
                 </button>
             )}
             </Tab>
         </Tab.List>
-        <Tab.Panels className="mt-1.5">
-            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Keep the selected object and replace the background.</Tab.Panel>
-            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Keep the background and fill the hole of the selected object.</Tab.Panel>
+        <Tab.Panels className="text-xs mt-1.5">
+            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Fill background (everything around this object).</Tab.Panel>
+            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Fill in object.</Tab.Panel>
         </Tab.Panels>
         </Tab.Group>
     </div>
