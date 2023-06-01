@@ -30,7 +30,7 @@ if stub.is_inside(stub.sam_image):
     import torch
     from PIL import Image
 
-@stub.cls(image=stub.sam_image, gpu="A10G")
+@stub.cls(image=stub.sam_image, gpu="A10G", keep_warm=1)
 class SegmentAnything:
     def __enter__(self):
         from segment_anything import sam_model_registry, SamPredictor
