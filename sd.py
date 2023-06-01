@@ -85,12 +85,8 @@ class StableDiffusion:
                     num_inference_steps=steps,
                 ).images[0]
 
-        # Convert to PNG bytes
-        image_output = []
-        with io.BytesIO() as buf:
-            image.save(buf, format="PNG")
-            image_output.append(buf.getvalue())
-        return image_output
+        return image
+
 
 @stub.local_entrypoint()
 def entrypoint(

@@ -58,7 +58,7 @@ def recover_size(image_padded: np.ndarray, mask_padded: np.ndarray, orig_size: T
     Returns:
         A tuple containing two numpy arrays - the recovered image and the recovered mask with dimensions `orig_size`.
     """
-    h,w,c = image_padded.shape
+    h,w,_ = image_padded.shape
     top_pad, bottom_pad, left_pad, right_pad = padding_factors
     image = image_padded[top_pad:h-bottom_pad, left_pad:w-right_pad, :]
     mask = mask_padded[top_pad:h-bottom_pad, left_pad:w-right_pad]

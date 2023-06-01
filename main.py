@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import modal
 import numpy as np
 
-from utils import dilate_mask, resize_and_pad
+from utils import dilate_mask, resize_and_pad, recover_size
 
 @stub.function(image=stub.sd_image)
 @modal.asgi_app()
@@ -105,6 +105,8 @@ def fastapi_app():
 
     @app.post("/generate-image")
     def generate_image(prompt: str = Form(...), mask_img: UploadFile = File(...), img: UploadFile = File(...)):
+        from io import BytesIO
+        
         images = []
         try:
             img_content = img.file.read()
@@ -118,12 +120,21 @@ def fastapi_app():
             img_padded, mask_padded, padding_factors = resize_and_pad(img_arr, mask_arr)
             img_padded = img_padded[:, :, :3]
 
-            for i in range(4):
-                background_image = sd.run_inference.call(prompt, img_padded, mask_padded)
-        
-                for _, image_bytes in enumerate(background_image):
-                    encoded = base64.b64encode(image_bytes)
-                    images.append(encoded)
+            height, width, _ = img_arr.shape
+
+            for _ in range(4):
+                img_padded = sd.run_inference.call(prompt, img_padded, mask_padded)
+
+                img_resized, _ = recover_size(np.array(img_padded), mask_padded, (height, width), padding_factors)
+                
+                # convert to base 64 image
+                buf = BytesIO()
+                img_resized = Image.fromarray(img_resized.astype(np.uint8))
+                img_resized.save(buf, format="PNG")
+                encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
+                
+                images.append(encoded)
+
             return {"images": images}
         except Exception as e:
             print(e)
