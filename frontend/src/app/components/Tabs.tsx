@@ -37,8 +37,8 @@ export default function Tabs(props: { setMaskState: any } ) {
             </Tab>
         </Tab.List>
         <Tab.Panels className="text-xs mt-1.5">
-            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Fill background (everything around this object).</Tab.Panel>
-            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Fill in object.</Tab.Panel>
+            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Generate new background (everything around this object).</Tab.Panel>
+            <Tab.Panel className="rounded text-sm bg-indigo-800/20 p-3">Generate object.</Tab.Panel>
         </Tab.Panels>
         </Tab.Group>
     </div>
