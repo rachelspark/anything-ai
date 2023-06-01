@@ -1,35 +1,28 @@
 from typing import List
 import modal
-import os
 from PIL import Image
 
 from common import stub
 
 cache_path = "/vol/sam-cache"
-
-def download_model():
-    from transformers import SamModel, SamProcessor
-    import torch
-
-    model = SamModel.from_pretrained("facebook/sam-vit-huge")
-    processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
-    model.save_pretrained(cache_path)
-    processor.save_pretrained(cache_path)
+sam_checkpoint = "sam_vit_h_4b8939.pth"
+model_type = "vit_h"
 
 image = (
     modal.Image.debian_slim()
-    .apt_install("git")
+    .apt_install("git", "wget")
     .pip_install(
         "opencv-python-headless",
         "torch",
+        "torchvision",
         "pycocotools",
         "matplotlib",
         "onnxruntime",
         "onnx",
-        "transformers",
         "pillow",
+        "git+https://github.com/facebookresearch/segment-anything.git",
     )
-    .run_function(download_model, gpu="any")
+    .run_commands(f'wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -P {cache_path}')
 )
 stub.sam_image = image
 
@@ -40,52 +33,38 @@ if stub.is_inside(stub.sam_image):
 @stub.cls(image=stub.sam_image, gpu="A10G")
 class SegmentAnything:
     def __enter__(self):
-        from transformers import SamModel, SamProcessor
+        from segment_anything import sam_model_registry, SamPredictor
 
-        self.model = SamModel.from_pretrained("facebook/sam-vit-huge")
-        self.processor = SamProcessor.from_pretrained("facebook/sam-vit-huge")
+        self.model = sam_model_registry[model_type](checkpoint=f'{cache_path}/{sam_checkpoint}').to("cuda")
+        self.predictor = SamPredictor(self.model)
 
     @modal.method()
-    def predict_masks(
-        self, img: Image, input_points: List[List[float]] = None, input_box: List[List[float]] = None
+    def predict_masks(self, img: Image, input_points: List[List[float]] = None, input_labels: List[int] = None, input_box: List[List[float]] = None
     ) -> list[bytes]:
         import numpy as np
-        
-        # calculate image embeddings
-        inputs = self.processor(img, return_tensors="pt")
-        image_embeddings = self.model.get_image_embeddings(inputs["pixel_values"])
-        inputs = self.processor(
-            img, 
-            input_points=input_points, 
-            input_boxes=input_box, 
-            return_tensors="pt"
-        )
-        inputs.pop("pixel_values", None)
-        inputs.update({"image_embeddings": image_embeddings})
-        
-        with torch.no_grad():
-            outputs = self.model(**inputs)
 
-        masks = self.processor.image_processor.post_process_masks(
-            outputs.pred_masks.cpu(), 
-            inputs["original_sizes"].cpu(), 
-            inputs["reshaped_input_sizes"].cpu()
+        if input_points is not None: 
+            input_points = np.array(input_points)
+            input_labels = np.array(input_labels)
+        if input_box is not None: input_box = np.array(input_box)
+
+        self.predictor.set_image(np.asarray(img))
+        masks, scores, _ = self.predictor.predict(
+            point_coords=input_points, 
+            point_labels=input_labels,
+            box=input_box, 
+            multimask_output=True,
         )
-        scores = outputs.iou_scores
 
         return masks, scores
 
-
 @stub.local_entrypoint()
 def entrypoint():
-    import torch
     import requests
     import numpy as np
     from pathlib import Path
-    import cv2
     from matplotlib import pyplot as plt
     from io import BytesIO
-    import base64
 
     img_url = "https://huggingface.co/ybelkada/segment-anything/resolve/main/assets/car.png"
     raw_image = Image.open(requests.get(img_url, stream=True).raw).convert("RGBA")
