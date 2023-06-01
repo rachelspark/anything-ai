@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "description": "Select any object in the image by clicking or drawing a box around it. Then create a mask, choosing whether you'd like to fill in the object or everything around it."
+        "description": "Click on an object or draw a box around it. Then create a mask, choosing whether you'd like to fill in the object or everything around it."
     },
     {
         "id": 2,
