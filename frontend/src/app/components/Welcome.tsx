@@ -2,15 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Slide } from '@mui/material';
 
 export default function Welcome(props:{ open: boolean, onClose: any }) {
-  const [height, setHeight] = useState(0);
   const [init, setInit] = useState(false);
   const welcomeEl = useRef(null);
 
   useEffect(() => {
     setInit(true);
   }, []);
-
-
 
   function handleWheel(event: { deltaY: number; }) {
     if (props.open) {
@@ -30,7 +27,7 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
           unmountOnExit
         >
         <div
-          className="fixed z-40 inset-3 sm:inset-6 md:inset-8 rounded-2xl border border-gray-300 bg-white px-4 sm:px-6 overflow-y-auto"
+          className="fixed z-40 inset-3 sm:inset-6 md:inset-8 rounded-2xl border border-gray-300 bg-white px-4 sm:px-6 overflow-y-hidden"
           onWheel={handleWheel}
           ref={welcomeEl}
         >
@@ -41,9 +38,9 @@ export default function Welcome(props:{ open: boolean, onClose: any }) {
                         anything
                     </div>
                 </header>
-                <div className="row-start-2 row-span-4 text-center items-center mx-12 my-8">
+                <div className="row-start-2 row-span-4 text-center items-center mx-8 sm:mx-12 my-8">
                   <div className="max-w-[600px]">
-                    <p className="font-medium text-4xl md:text-5xl md:leading-12">
+                    <p className="font-medium text-3xl sm:text-4xl md:text-5xl md:leading-12">
                             Click and fill anything, with a simple text prompt
                     </p>
                   </div>

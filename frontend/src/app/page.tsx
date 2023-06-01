@@ -20,12 +20,12 @@ export default function Home() {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between p-12 sm:p-24 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-indigo-100 via-sky-50 to-white ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center justify-between pt-14 p-6 sm:p-24 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-indigo-100 via-sky-50 to-white ${inter.className}`}
     >
       <Welcome open={welcome} onClose={handleClose}/>
       <div className="w-full">
-        <header className="absolute inset-x-0 top-10 text-center">
-          <button className="font-heading font-sans text-4xl pb-10 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
+        <header className="absolute inset-x-0 top-6 sm:top-10 text-center">
+          <button className="font-heading font-sans text-3xl sm:text-4xl mb-12 hover:[text-shadow:_0_0_2px_rgb(0_0_255_/_25%)]" onClick={() => setWelcome(true)}>
             anything
           </button>
         </header>
